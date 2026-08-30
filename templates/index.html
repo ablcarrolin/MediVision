@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard Analisis Kesehatan Visual Real-Time</title>
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #0f172a; color: #f8fafc; padding: 20px; margin: 0; }
+        .header { text-align: center; margin-bottom: 20px; }
+        .container { display: flex; gap: 20px; justify-content: center; align-items: flex-start; }
+        .video-box { border: 3px solid #00f2fe; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,242,254,0.3); }
+        .dashboard { display: flex; flex-direction: column; gap: 12px; width: 320px; }
+        .card { background-color: #1e293b; border-radius: 10px; padding: 15px; border-left: 5px solid #00f2fe; }
+        .val { font-size: 26px; font-weight: bold; color: #38bdf8; margin-top: 5px; }
+        .status { font-weight: bold; padding: 4px 8px; border-radius: 4px; display: inline-block; }
+        .active { background-color: #15803d; color: #fff; }
+        .inactive { background-color: #b91c1c; color: #fff; }
+        .score-box { background: linear-gradient(135deg, #0284c7, #0369a1); text-align: center; }
+        .score-val { font-size: 40px; font-weight: bold; color: #ffffff; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h2>Sistem Analisis Kesehatan & Postur Visual</h2>
+        <p>Integrasi MediaPipe Holistic (Wajah, Body Pose, & Jari Tangan) + Web Dashboard</p>
+    </div>
+
+    <div class="container">
+        <!-- Live Video Stream dengan Seluruh Landmark Aktif -->
+        <div class="video-box">
+            <img src="{{ url_for('video_feed') }}" width="640" height="480" alt="Stream Kamera Utuh">
+        </div>
+
+        <!-- Panel Data Analisis Real-Time -->
+        <div class="dashboard">
+            <div class="card score-box">
+                <div>Skor Kesehatan Postur</div>
+                <div class="score-val"><span id="skor_kesehatan">0</span> / 100</div>
+                <small id="status_postur">Analisis...</small>
+            </div>
+
+            <div class="card">
+                <h3>Biomekanika Sendi</h3>
+                <p>Sudut Siku Kiri: <span id="siku_kiri" class="val">0</span>°</p>
+                <p>Sudut Pinggang: <span id="pinggang_kiri" class="val">0</span>°</p>
+                <p>Asimetris Bahu: <span id="kemiringan_bahu" class="val">0</span>%</p>
+            </div>
+
+            <div class="card">
+                <h3>Status Visual Landmark</h3>
+                <p>Face Mesh (468 Titik): <span id="wajah" class="status inactive">Tidak Terdeteksi</span></p>
+                <p>Jari Tangan Kiri: <span id="tangan_kiri" class="status inactive">Tidak Terdeteksi</span></p>
+                <p>Jari Tangan Kanan: <span id="tangan_kanan" class="status inactive">Tidak Terdeteksi</span></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const socket = io();
+
+        socket.on('update_data', function(data) {
+            document.getElementById('siku_kiri').innerText = data.siku_kiri;
+            document.getElementById('pinggang_kiri').innerText = data.pinggang_kiri;
+            document.getElementById('kemiringan_bahu').innerText = data.kemiringan_bahu;
+            document.getElementById('skor_kesehatan').innerText = data.skor_kesehatan;
+            document.getElementById('status_postur').innerText = data.status_postur;
+
+            updateStatus('wajah', data.wajah_terdeteksi);
+            updateStatus('tangan_kiri', data.tangan_kiri_terdeteksi);
+            updateStatus('tangan_kanan', data.tangan_kanan_terdeteksi);
+        });
+
+        function updateStatus(id, active) {
+            const el = document.getElementById(id);
+            if(active) {
+                el.innerText = "Aktif (Terlacak)";
+                el.className = "status active";
+            } else {
+                el.innerText = "Tidak Terdeteksi";
+                el.className = "status inactive";
+            }
+        }
+    </script>
+</body>
+</html>
