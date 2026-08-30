@@ -6,7 +6,7 @@ Buka aplikasi Visual Studio Code.
 
 Klik menu File > Open Folder...
 
-di dalam foldernya itu buat file html namanya(index.html) jangan di ubah ama nya!
+di dalam foldernya itu buat file html namanya(index.html) jangan di ubah nama nya!
 
 Pilih folder proyek yang sudah di-download dari GitHub.
 
@@ -19,4 +19,4 @@ Di bagian bawah layar akan muncul jendela hitam/biru (PowerShell/Command Prompt)
 Langkah 3: Install Semua Library/Pustaka
 Ketik perintah ini di dalam Terminal VS Code, lalu tekan Enter:
 
-python -m pip install opencv-python mediapipe numpy flask flask-socketio
+python -m pip install opencv-python mediapipe numpy flask flask-socketio  ! wajib di instal 
